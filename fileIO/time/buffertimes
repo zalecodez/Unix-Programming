@@ -1,0 +1,22 @@
+#!/bin/bash
+size=1
+
+time=`which time`
+
+rm -r files
+mkdir files
+
+dd if=/dev/urandom of=files/newfile bs=1M count=10
+
+for i in {1..20}
+do
+    cp files/newfile files/newfile-$i
+done
+
+printf "\t\tTimes \n\nSize \tReal \tUser \tSystem\n" > time.txt
+for i in {1..20}; do
+    $time -f "$size \t%e \t%U \t%S" -a -o time.txt ./bufftest $size < files/newfile-$i 1> /dev/null
+    let size=size*2
+done
+
+rm -r files
